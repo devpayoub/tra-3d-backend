@@ -1,9 +1,3 @@
-#!/bin/sh
-
-python manage.py collectstatic --noinput
-python manage.py migrate --noinput
-
-# Create superuser only if it doesn't exist
 python manage.py shell << END
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -12,11 +6,21 @@ name = "$DJANGO_SUPERUSER_NAME"
 email = "$DJANGO_SUPERUSER_EMAIL"
 password = "$DJANGO_SUPERUSER_PASSWORD"
 
-if not User.objects.filter(name=name).exists():
-    print("Creating admin user...")
-    User.objects.create_superuser(name, email, password)
-else:
-    print("Admin user already exists.")
-END
+user, created = User.objects.get_or_create(
+    email=email,
+    defaults={"name": name}
+)
 
-exec gunicorn --bind 0.0.0.0:8000 authAPI.wsgi:application
+if created:
+    print("Creating admin user...")
+    user.set_password(password)
+
+# force admin permissions
+user.is_admin = True
+user.is_staff = True
+user.is_superuser = True
+user.is_active = True
+
+user.save()
+print("Admin user ready.")
+END
