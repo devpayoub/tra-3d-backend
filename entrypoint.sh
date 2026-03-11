@@ -8,7 +8,7 @@ python manage.py shell << END
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
-username = "$DJANGO_SUPERUSER_NAME"
+name = "$DJANGO_SUPERUSER_NAME"
 email = "$DJANGO_SUPERUSER_EMAIL"
 password = "$DJANGO_SUPERUSER_PASSWORD"
 
