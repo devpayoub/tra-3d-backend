@@ -1,0 +1,20 @@
+name: tr3ad-backend
+services:
+  web:
+    build: .
+    ports:
+      - "80:8000"
+    environment:
+      - DEBUG=False
+      - ALLOWED_HOSTS=*
+      - SECRET_KEY
+      - SUPABASE_ACCESS_KEY_ID
+      - SUPABASE_SECRET_ACCESS_KEY
+      - SUPABASE_STORAGE_BUCKET_NAME
+      - SUPABASE_S3_REGION_NAME
+      - FRONTEND_URL
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.5'
+          memory: 512M
