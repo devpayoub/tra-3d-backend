@@ -1,3 +1,8 @@
+#!/bin/sh
+
+python manage.py collectstatic --noinput
+python manage.py migrate --noinput
+
 python manage.py shell << END
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -15,7 +20,6 @@ if created:
     print("Creating admin user...")
     user.set_password(password)
 
-# force admin permissions
 user.is_admin = True
 user.is_staff = True
 user.is_superuser = True
@@ -24,3 +28,5 @@ user.is_active = True
 user.save()
 print("Admin user ready.")
 END
+
+exec gunicorn --bind 0.0.0.0:8000 authAPI.wsgi:application
