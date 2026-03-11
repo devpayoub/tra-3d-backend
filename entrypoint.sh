@@ -7,8 +7,8 @@ python manage.py shell << END
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
-name = "$DJANGO_SUPERUSER_NAME"
 email = "$DJANGO_SUPERUSER_EMAIL"
+name = "$DJANGO_SUPERUSER_NAME"
 password = "$DJANGO_SUPERUSER_PASSWORD"
 
 user, created = User.objects.get_or_create(
@@ -16,17 +16,12 @@ user, created = User.objects.get_or_create(
     defaults={"name": name}
 )
 
-if created:
-    print("Creating admin user...")
-    user.set_password(password)
-
+user.set_password(password)
 user.is_admin = True
-user.is_staff = True
 user.is_superuser = True
 user.is_active = True
-
 user.save()
-print("Admin user ready.")
-END
 
+print("Admin user ready")
+END
 exec gunicorn --bind 0.0.0.0:8000 authAPI.wsgi:application
